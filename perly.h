@@ -7,11 +7,11 @@
 #define PERL_BISON_VERSION  30000
 
 #ifdef PERL_CORE
-/* A Bison parser, made by GNU Bison 3.0.5.  */
+/* A Bison parser, made by GNU Bison 3.0.4.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015, 2018 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -189,6 +189,6 @@ int yyparse (void);
 
 
 /* Generated from:
- * c522864236e07231c0a218cecf8cdcd82b74ce082b72f10199de4deeff580100 perly.y
+ * 4369bae1a67a25e2047d93cd534f0c0f8b041d719ae9d04bb2a32d6edeae31bc perly.y
  * 0947213b55d0ed11693554bea04987e886cf285f5c14cf9075fa1e7acc3f4061 regen_perly.pl
  * ex: set ro: */

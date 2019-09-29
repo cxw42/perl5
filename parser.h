@@ -4,7 +4,7 @@
  *
  *    You may distribute under the terms of either the GNU General Public
  *    License or the Artistic License, as specified in the README file.
- * 
+ *
  * This file defines the layout of the parser object used by the parser
  * and lexer (perly.c, toke.c).
  */
@@ -84,7 +84,7 @@ typedef struct yy_parser {
 				   to the next */
     char	*oldbufptr;	/* in yylex, beginning of current token */
     char	*oldoldbufptr;	/* in yylex, beginning of previous token */
-    char	*bufend;	
+    char	*bufend;
     char	*linestart;	/* beginning of most recently read line */
     char	*last_uni;	/* position of last named-unary op */
     char	*last_lop;	/* position of last list operator */
@@ -94,6 +94,7 @@ typedef struct yy_parser {
        bers in multiline constructs using the number of the first line. */
     line_t	copline;
     U16		in_my;		/* we're compiling a "my"/"our" declaration */
+    U8		permit_adverb;	/* we can accept an adverb here */
     U8		lex_state;	/* next token is determined */
     U8		error_count;	/* how many compile errors so far, max 10 */
     U8		sub_error_count; /* the number of errors before sublexing */

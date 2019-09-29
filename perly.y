@@ -1148,9 +1148,11 @@ term	:	termbinop
 				    newLISTOP(OP_ASLICE, 0,
 					list($3),
 					ref($1, OP_ASLICE)));
-			  if ($$ && $1)
+			  if ($$ && $1) {
 			      $$->op_private |=
 				  $1->op_private & OPpSLICEWARNING;
+			  }
+			  parser->permit_adverb = TRUE;
 			}
 	|	kvslice '[' expr ']'                 /* array key/value slice */
 			{ $$ = op_prepend_elem(OP_KVASLICE,

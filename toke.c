@@ -80,6 +80,7 @@ Individual members of C<PL_parser> have their own documentation.
 #define PL_rsfp			(PL_parser->rsfp)
 #define PL_rsfp_filters		(PL_parser->rsfp_filters)
 #define PL_in_my		(PL_parser->in_my)
+#define PL_permit_adverb	(PL_parser->permit_adverb)
 #define PL_in_my_stash		(PL_parser->in_my_stash)
 #define PL_tokenbuf		(PL_parser->tokenbuf)
 #define PL_multi_end		(PL_parser->multi_end)
@@ -2455,6 +2456,8 @@ S_sublex_push(pTHX)
     SAVEBOOL(PL_parser->lex_re_reparsing);
     SAVEI32(PL_copline);
 
+    /* XXX article - need to save PL_permit_adverb? */
+
     /* The here-doc parser needs to be able to peek into outer lexing
        scopes to find the body of the here-doc.  So we put PL_linestr and
        PL_bufptr into lex_shared, to ‘share’ those values.
@@ -2533,6 +2536,8 @@ S_sublex_done(pTHX)
 	PL_lex_state = LEX_INTERPCASEMOD;
 	return yylex();
     }
+
+    /* XXX article - need to restore PL_permit_adverb? */
 
     /* Is there a right-hand side to take care of? (s//RHS/ or tr//RHS/) */
     assert(PL_lex_inwhat != OP_TRANSR);
@@ -5993,14 +5998,21 @@ Perl_yylex(pTHX)
 
 	switch (PL_expect) {
 	case XOPERATOR:
+            DEBUG_T( { printbuf("    At XOPERATOR check, PL_permit_adverb was %s\n", 
+                        PL_permit_adverb ? "TRUE" : "FALSE"); } );
              /* XXX article: We should get here for the adverb in @foo[0]:kv */
-	    if (!PL_in_my || (PL_lex_state != LEX_NORMAL && !PL_lex_brackets))
+	    if (!PL_permit_adverb &&
+                    ( !PL_in_my || (PL_lex_state != LEX_NORMAL && !PL_lex_brackets) )) {
 		break;
+            }
 	    PL_bufptr = s;	/* update in case we back off */
 	    if (*s == '=') {
 		Perl_croak(aTHX_
 			   "Use of := for an empty attribute list is not allowed");
 	    }
+            DEBUG_T( { printbuf("    PL_permit_adverb was %s\n", 
+                        PL_permit_adverb ? "TRUE" : "FALSE"); } );
+            PL_permit_adverb = FALSE;   /* PL_permit_adverb only lasts one token */
 	    goto grabattrs;
 	case XATTRBLOCK:
 	    PL_expect = XBLOCK;
