@@ -5993,6 +5993,7 @@ Perl_yylex(pTHX)
 
 	switch (PL_expect) {
 	case XOPERATOR:
+             /* XXX article: We should get here for the adverb in @foo[0]:kv */
 	    if (!PL_in_my || (PL_lex_state != LEX_NORMAL && !PL_lex_brackets))
 		break;
 	    PL_bufptr = s;	/* update in case we back off */

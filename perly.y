@@ -951,6 +951,7 @@ method	:	METHOD
 	;
 
 /* Some kind of subscripted expression */
+/* XXX article */
 subscripted:    gelem '{' expr ';' '}'        /* *main::{something} */
                         /* In this and all the hash accessors, ';' is
                          * provided by the tokeniser */
@@ -1108,6 +1109,7 @@ termdo	:       DO term	%prec UNIOP                     /* do $filename */
 			{ $$ = newUNOP(OP_NULL, OPf_SPECIAL, op_scope($2));}
         ;
 
+/* XXX article - sliceme and kvslice below */
 term	:	termbinop
 	|	termunop
 	|	anonymous
