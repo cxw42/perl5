@@ -1152,6 +1152,18 @@ term	:	termbinop
 			      $$->op_private |=
 				  $1->op_private & OPpSLICEWARNING;
 			}
+	|	sliceme COLONATTR '[' expr ']'                     /* array slice */
+			{ 
+			  printf("Got COLONATTR\n");
+			  $$ = op_prepend_elem(OP_ASLICE,
+				newOP(OP_PUSHMARK, 0),
+				    newLISTOP(OP_ASLICE, 0,
+					list($4),
+					ref($1, OP_ASLICE)));
+			  if ($$ && $1)
+			      $$->op_private |=
+				  $1->op_private & OPpSLICEWARNING;
+			}
 	|	kvslice '[' expr ']'                 /* array key/value slice */
 			{ $$ = op_prepend_elem(OP_KVASLICE,
 				newOP(OP_PUSHMARK, 0),
