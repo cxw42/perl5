@@ -1,0 +1,372 @@
+Starting parse
+Entering state 0
+lookahead token is token GRAMPROG (0x0)
+Shifting token GRAMPROG, Entering state 1
+
+index:        1
+state:        1
+token: GRAMPROG
+value:        0
+
+Reducing stack by rule 1 (line 122), -> @1
+Entering state 9
+
+index:        1        2
+state:        1        9
+token: GRAMPROG       @1
+value:        0        0
+
+Reducing stack by rule 17 (line 220), -> remember
+Entering state 17
+
+index:        1        2        3
+state:        1        9       17
+token: GRAMPROG       @1 remember
+value:        0        0       25
+
+Reducing stack by rule 20 (line 238), -> stmtseq
+Entering state 110
+Reading a token:
+### 0:LEX_NORMAL/XSTATE "\n"
+### <== MY(ival=0)
+
+lookahead token is token MY (0x0)
+Shifting token MY, Entering state 48
+Reading a token:
+### 1:LEX_NORMAL/XTERM "@x; @x[0]:kv\n"
+### forced token:
+### <== 'p' (pending identifier)
+
+### <== '@'
+
+lookahead token is token '@' (0x0)
+Shifting token '@', Entering state 21
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR "; @x[0]:kv\n"
+### Pending identifier '@x'
+### <== PRIVATEREF(opval=op_padany)
+
+lookahead token is token PRIVATEREF (0x928b8)
+Shifting token PRIVATEREF, Entering state 116
+
+index:        1        2        3        4        5        6        7
+state:        1        9       17      110       48       21      116
+token: GRAMPROG       @1 remember  stmtseq       MY      '@' PRIVATER
+value:        0        0       25 (Nullop)        0        0   padany
+
+Reducing stack by rule 282 (line 1425), PRIVATEREF -> indirob
+Entering state 119
+
+index:        1        2        3        4        5        6        7
+state:        1        9       17      110       48       21      119
+token: GRAMPROG       @1 remember  stmtseq       MY      '@'  indirob
+value:        0        0       25 (Nullop)        0        0   padany
+
+Reducing stack by rule 268 (line 1380), '@' indirob -> ary
+Entering state 156
+
+index:        1        2        3        4        5        6
+state:        1        9       17      110       48      156
+token: GRAMPROG       @1 remember  stmtseq       MY      ary
+value:        0        0       25 (Nullop)        0    padav
+
+Reducing stack by rule 251 (line 1330), ary -> myterm
+Entering state 154
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR "; @x[0]:kv\n"
+### <== ';'
+
+lookahead token is token ';' (0x928b8)
+
+index:        1        2        3        4        5        6
+state:        1        9       17      110       48      154
+token: GRAMPROG       @1 remember  stmtseq       MY   myterm
+value:        0        0       25 (Nullop)        0    padav
+
+Reducing stack by rule 245 (line 1314), MY myterm -> myattrterm
+Entering state 69
+
+index:        1        2        3        4        5
+state:        1        9       17      110       69
+token: GRAMPROG       @1 remember  stmtseq myattrte
+value:        0        0       25 (Nullop)    padav
+
+Reducing stack by rule 197 (line 1133), myattrterm -> term
+Entering state 68
+lookahead token is token ';' (0x928b8)
+
+index:        1        2        3        4        5
+state:        1        9       17      110       68
+token: GRAMPROG       @1 remember  stmtseq     term
+value:        0        0       25 (Nullop)    padav
+
+Reducing stack by rule 130 (line 899), term -> listexpr
+Entering state 60
+lookahead token is token ';' (0x928b8)
+
+index:        1        2        3        4        5
+state:        1        9       17      110       60
+token: GRAMPROG       @1 remember  stmtseq listexpr
+value:        0        0       25 (Nullop)    padav
+
+Reducing stack by rule 127 (line 888), listexpr -> expr
+Entering state 102
+lookahead token is token ';' (0x928b8)
+
+index:        1        2        3        4        5
+state:        1        9       17      110      102
+token: GRAMPROG       @1 remember  stmtseq     expr
+value:        0        0       25 (Nullop)    padav
+
+Reducing stack by rule 63 (line 511), expr -> sideff
+Entering state 101
+lookahead token is token ';' (0x928b8)
+Shifting token ';', Entering state 225
+
+index:        1        2        3        4        5        6
+state:        1        9       17      110      101      225
+token: GRAMPROG       @1 remember  stmtseq   sideff      ';'
+value:        0        0       25 (Nullop)    padav   600248
+
+Reducing stack by rule 56 (line 468), sideff ';' -> barestmt
+Entering state 106
+
+index:        1        2        3        4        5
+state:        1        9       17      110      106
+token: GRAMPROG       @1 remember  stmtseq barestmt
+value:        0        0       25 (Nullop)    padav
+
+Reducing stack by rule 24 (line 259), barestmt -> fullstmt
+Entering state 234
+
+index:        1        2        3        4        5
+state:        1        9       17      110      234
+token: GRAMPROG       @1 remember  stmtseq fullstmt
+value:        0        0       25 (Nullop)  lineseq
+
+Reducing stack by rule 21 (line 239), stmtseq fullstmt -> stmtseq
+Entering state 110
+Reading a token:
+### 1:LEX_NORMAL/XSTATE " @x[0]:kv\n"
+### forced token:
+### <== 'p' (pending identifier)
+
+### <== '@'
+
+lookahead token is token '@' (0x0)
+Shifting token '@', Entering state 21
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR "[0]:kv\n"
+### Pending identifier '@x'
+### <== PRIVATEREF(opval=op_padany)
+
+lookahead token is token PRIVATEREF (0x927f0)
+Shifting token PRIVATEREF, Entering state 116
+
+index:        1        2        3        4        5        6
+state:        1        9       17      110       21      116
+token: GRAMPROG       @1 remember  stmtseq      '@' PRIVATER
+value:        0        0       25  lineseq        0   padany
+
+Reducing stack by rule 282 (line 1425), PRIVATEREF -> indirob
+Entering state 119
+
+index:        1        2        3        4        5        6
+state:        1        9       17      110       21      119
+token: GRAMPROG       @1 remember  stmtseq      '@'  indirob
+value:        0        0       25  lineseq        0   padany
+
+Reducing stack by rule 268 (line 1380), '@' indirob -> ary
+Entering state 73
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR "[0]:kv\n"
+### <== '['
+
+lookahead token is token '[' (0x927f0)
+
+index:        1        2        3        4        5
+state:        1        9       17      110       73
+token: GRAMPROG       @1 remember  stmtseq      ary
+value:        0        0       25  lineseq    padav
+
+Reducing stack by rule 273 (line 1402), ary -> sliceme
+Entering state 77
+lookahead token is token '[' (0x927f0)
+Shifting token '[', Entering state 200
+Reading a token:
+### 1:LEX_NORMAL/XTERM "0]:kv\n"
+### Saw number in "]:kv\n"
+### <== THING(opval=op_const) IV(0)
+
+lookahead token is token THING (0x927b8)
+Shifting token THING, Entering state 27
+
+index:        1        2        3        4        5        6        7
+state:        1        9       17      110       77      200       27
+token: GRAMPROG       @1 remember  stmtseq  sliceme      '['    THING
+value:        0        0       25  lineseq    padav   600048    const
+
+Reducing stack by rule 212 (line 1228), THING -> term
+Entering state 68
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR "]:kv\n"
+    At rbrack check, PL_permit_adverb was "FALSE"
+### <== ']'
+
+lookahead token is token ']' (0x927b8)
+
+index:        1        2        3        4        5        6        7
+state:        1        9       17      110       77      200       68
+token: GRAMPROG       @1 remember  stmtseq  sliceme      '['     term
+value:        0        0       25  lineseq    padav   600048    const
+
+Reducing stack by rule 130 (line 899), term -> listexpr
+Entering state 60
+lookahead token is token ']' (0x927b8)
+
+index:        1        2        3        4        5        6        7
+state:        1        9       17      110       77      200       60
+token: GRAMPROG       @1 remember  stmtseq  sliceme      '[' listexpr
+value:        0        0       25  lineseq    padav   600048    const
+
+Reducing stack by rule 127 (line 888), listexpr -> expr
+Entering state 317
+lookahead token is token ']' (0x927b8)
+
+index:        1        2        3        4        5        6        7
+state:        1        9       17      110       77      200      317
+token: GRAMPROG       @1 remember  stmtseq  sliceme      '['     expr
+value:        0        0       25  lineseq    padav   600048    const
+
+Reducing stack by rule 189 (line 1114), sliceme '[' expr -> slicestart
+Entering state 67
+lookahead token is token ']' (0x927b8)
+Error: popping nterm slicestart ()
+(freeing op)
+
+index:        1        2        3        4
+state:        1        9       17      110
+token: GRAMPROG       @1 remember  stmtseq
+value:        0        0       25  lineseq
+
+Shifting error token, Entering state 82
+
+index:        1        2        3        4        5
+state:        1        9       17      110       82
+token: GRAMPROG       @1 remember  stmtseq    <err>
+value:        0        0       25  lineseq   599992
+
+Reducing stack by rule 62 (line 509), error -> sideff
+Entering state 101
+lookahead token is token ']' (0x927b8)
+Error: discarding token ']' (0x927b8)
+Error: popping nterm sideff ()
+
+index:        1        2        3        4
+state:        1        9       17      110
+token: GRAMPROG       @1 remember  stmtseq
+value:        0        0       25  lineseq
+
+Shifting error token, Entering state 82
+
+index:        1        2        3        4        5
+state:        1        9       17      110       82
+token: GRAMPROG       @1 remember  stmtseq    <err>
+value:        0        0       25  lineseq   599992
+
+Reducing stack by rule 62 (line 509), error -> sideff
+Entering state 101
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR ":kv\n"
+    At XOPERATOR check, PL_permit_adverb was "TRUE"
+### <== ':'
+
+lookahead token is token ':' (0x927b8)
+Error: discarding token ':' (0x927b8)
+Error: popping nterm sideff ()
+
+index:        1        2        3        4
+state:        1        9       17      110
+token: GRAMPROG       @1 remember  stmtseq
+value:        0        0       25  lineseq
+
+Shifting error token, Entering state 82
+
+index:        1        2        3        4        5
+state:        1        9       17      110       82
+token: GRAMPROG       @1 remember  stmtseq    <err>
+value:        0        0       25  lineseq   599992
+
+Reducing stack by rule 62 (line 509), error -> sideff
+Entering state 101
+Reading a token:
+### 1:LEX_NORMAL/XTERM "kv\n"
+### <== BAREWORD(opval=op_const) PV("kv"\0)
+
+lookahead token is token BAREWORD (0x92778)
+Error: discarding token BAREWORD (0x92778)
+Error: popping nterm sideff ()
+
+index:        1        2        3        4
+state:        1        9       17      110
+token: GRAMPROG       @1 remember  stmtseq
+value:        0        0       25  lineseq
+
+Shifting error token, Entering state 82
+
+index:        1        2        3        4        5
+state:        1        9       17      110       82
+token: GRAMPROG       @1 remember  stmtseq    <err>
+value:        0        0       25  lineseq   599928
+
+Reducing stack by rule 62 (line 509), error -> sideff
+Entering state 101
+Reading a token:
+### 1:LEX_NORMAL/XOPERATOR ";"
+### <== ';'
+
+lookahead token is token ';' (0x92778)
+Shifting token ';', Entering state 225
+
+index:        1        2        3        4        5        6
+state:        1        9       17      110      101      225
+token: GRAMPROG       @1 remember  stmtseq   sideff      ';'
+value:        0        0       25  lineseq (Nullop)   599928
+
+Reducing stack by rule 56 (line 468), sideff ';' -> barestmt
+Entering state 106
+
+index:        1        2        3        4        5
+state:        1        9       17      110      106
+token: GRAMPROG       @1 remember  stmtseq barestmt
+value:        0        0       25  lineseq (Nullop)
+
+Reducing stack by rule 24 (line 259), barestmt -> fullstmt
+Entering state 234
+
+index:        1        2        3        4        5
+state:        1        9       17      110      234
+token: GRAMPROG       @1 remember  stmtseq fullstmt
+value:        0        0       25  lineseq (Nullop)
+
+Reducing stack by rule 21 (line 239), stmtseq fullstmt -> stmtseq
+Entering state 110
+Reading a token:
+### 1:LEX_NORMAL/XSTATE ""
+### Tokener got EOF
+### <== EOF
+
+Now at end of input.
+lookahead token is token $end (0x92778)
+
+index:        1        2        3        4
+state:        1        9       17      110
+token: GRAMPROG       @1 remember  stmtseq
+value:        0        0       25  lineseq
+
+Reducing stack by rule 2 (line 121), GRAMPROG @1 remember stmtseq -> grammar
+Entering state 8
+lookahead token is token $end (0x92778)
+clearing the parse stack
+syntax error at foo.pl line 1, near "0]"
+Execution of foo.pl aborted due to compilation errors.

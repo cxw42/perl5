@@ -61,6 +61,7 @@
 %token <ival> LOCAL MY REQUIRE
 %token <ival> COLONATTR FORMLBRACK FORMRBRACK
 %token <ival> SUBLEXSTART SUBLEXEND
+%token <ival> RBRACKADV
 
 %type <ival> grammar remember mremember
 %type <ival>  startsub startanonsub startformsub
@@ -69,7 +70,8 @@
 
 %type <opval> stmtseq fullstmt labfullstmt barestmt block mblock else
 %type <opval> expr term subscripted scalar ary hsh arylen star amper sideff
-%type <opval> sliceme kvslice gelem
+%type <opval> sliceme kvslice gelem 
+%type <opval> slicestart
 %type <opval> listexpr nexpr texpr iexpr mexpr mnexpr
 %type <opval> optlistexpr optexpr optrepl indirob listop method
 %type <opval> formname subname proto cont my_scalar my_var
@@ -1109,6 +1111,17 @@ termdo	:       DO term	%prec UNIOP                     /* do $filename */
 			{ $$ = newUNOP(OP_NULL, OPf_SPECIAL, op_scope($2));}
         ;
 
+slicestart:	sliceme '[' expr
+			{
+			  /* stash $1 and $3 in a rather ugly way */
+			  $$ = newBINOP(OP_GELEM, 0, $1, $3); 
+			  parser->permit_adverb = TRUE;
+			  /* TODO RESUME HERE - trace
+			   * ./perl.exe -DpvT foo.pl
+			   */
+			}
+	;
+
 /* XXX article - sliceme and kvslice below */
 term	:	termbinop
 	|	termunop
@@ -1142,17 +1155,54 @@ term	:	termbinop
 			{ $$ = newUNOP(OP_AV2ARYLEN, 0, ref($1, OP_AV2ARYLEN));}
 	|       subscripted
 			{ $$ = $1; }
-	|	sliceme '[' expr ']'                     /* array slice */
-			{ $$ = op_prepend_elem(OP_ASLICE,
-				newOP(OP_PUSHMARK, 0),
-				    newLISTOP(OP_ASLICE, 0,
-					list($3),
-					ref($1, OP_ASLICE)));
-			  if ($$ && $1) {
-			      $$->op_private |=
-				  $1->op_private & OPpSLICEWARNING;
+	|	slicestart RBRACKADV                     /* array slice */
+			{ 
+			  struct binop *incoming;
+			  OP *the_sliceme;
+			  OP *the_expr;
+			  slice_adverb adverb;
+
+			  /* Undo the ugliness from the slicestart action */
+			  incoming = (struct binop *)($1);
+			  the_sliceme = incoming->op_first;
+			  the_expr = incoming->op_last;
+			  incoming->op_first = NULL;
+			  incoming->op_last = NULL;
+			  op_free((OP *)incoming);
+			  incoming = NULL;
+
+			  /* Figure out what type of slice we have based
+			   * on the RBRACK. */
+			  adverb = (slice_adverb)($2);
+
+			  if(adverb == SLICEADVERB_VALUES) {  /* array slice */
+			      $$ = op_prepend_elem(OP_ASLICE,
+				    newOP(OP_PUSHMARK, 0),
+				        newLISTOP(OP_ASLICE, 0,
+					    list(the_expr),
+					    ref(the_sliceme, OP_ASLICE)));
+			      if ($$ && the_sliceme) {
+			          $$->op_private |=
+				      the_sliceme->op_private & OPpSLICEWARNING;
+			      }
 			  }
-			  parser->permit_adverb = TRUE;
+			  else if(adverb == SLICEADVERB_NONE) { /* scalar */
+			      $$ = newBINOP(OP_AELEM, 0, 
+				oopsAV(the_sliceme), scalar(the_expr));
+				/* TODO see if oopsAV needs changing since
+				 * we are now a sliceme and not a 
+				 * scalar.  A sliceme is an AVREF and a
+				 * scalar is an SVREF. 
+				 * --- Yes, it does need changing - 
+				 * the sliceme points to an array var
+				 * and the scalar points to a scalar var. 
+				 * Need to get the name from the_sliceme
+				 * and change it to refer to @foo instead
+				 * of $foo. */
+			  }
+			  else {
+			      yyerror("Unimplemented slice adverb");
+			  }
 			}
 	|	kvslice '[' expr ']'                 /* array key/value slice */
 			{ $$ = op_prepend_elem(OP_KVASLICE,

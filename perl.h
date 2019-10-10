@@ -5214,6 +5214,13 @@ typedef enum {
 
 #define KEY_sigvar 0xFFFF /* fake keyword representing a signature var */
 
+typedef enum {
+    SLICEADVERB_NONE,   /* return a scalar */
+    SLICEADVERB_KEYS,   /* return a list */
+    SLICEADVERB_VALUES, /* return a list */
+    SLICEADVERB_KV      /* return a list */
+} slice_adverb;
+
 /* Hints are now stored in a dedicated U32, so the bottom 8 bits are no longer
    special and there is no need for HINT_PRIVATE_MASK for COPs
    However, bitops store HINT_INTEGER in their op_private.
@@ -7933,6 +7940,8 @@ END_EXTERN_C
 
 #endif /* DOUBLE_HAS_NAN */
 
+#if defined(PERL_IN_TOKE_C) || defined(PERL_IN_PERLY_C)
+#endif
 
 /*
 

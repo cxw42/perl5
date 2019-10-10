@@ -1163,7 +1163,7 @@ Perl_isSTRICT_UTF8_CHAR(const U8 * const s0, const U8 * const e)
 #ifndef EBCDIC
 
     /* The dfa above drops out for certain Hanguls; handle them specially */
-    if (is_HANGUL_ED_utf8_safe(s0, e)) {
+    if (is_HANGUL_ED_utf8_safe(s0, e) != 0) {
         return 3;
     }
 

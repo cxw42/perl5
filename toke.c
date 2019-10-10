@@ -366,6 +366,7 @@ static struct debug_tokens {
     { PREINC,		TOKENTYPE_NONE,		"PREINC" },
     { PRIVATEREF,	TOKENTYPE_OPVAL,	"PRIVATEREF" },
     { QWLIST,		TOKENTYPE_OPVAL,	"QWLIST" },
+    { RBRACKADV,	TOKENTYPE_IVAL,		"RBRACKADV" },
     { REFGEN,		TOKENTYPE_NONE,		"REFGEN" },
     { RELOP,		TOKENTYPE_OPNUM,	"RELOP" },
     { REQUIRE,		TOKENTYPE_NONE,		"REQUIRE" },
@@ -5998,10 +5999,10 @@ Perl_yylex(pTHX)
 
 	switch (PL_expect) {
 	case XOPERATOR:
-            DEBUG_T( { printbuf("    At XOPERATOR check, PL_permit_adverb was %s\n", 
+            DEBUG_T( { printbuf("    At XOPERATOR check, PL_permit_adverb was %s\n",
                         PL_permit_adverb ? "TRUE" : "FALSE"); } );
              /* XXX article: We should get here for the adverb in @foo[0]:kv */
-	    if (!PL_permit_adverb &&
+	    if ( /* !PL_permit_adverb && */
                     ( !PL_in_my || (PL_lex_state != LEX_NORMAL && !PL_lex_brackets) )) {
 		break;
             }
@@ -6010,9 +6011,9 @@ Perl_yylex(pTHX)
 		Perl_croak(aTHX_
 			   "Use of := for an empty attribute list is not allowed");
 	    }
-            DEBUG_T( { printbuf("    PL_permit_adverb was %s\n", 
+            DEBUG_T( { printbuf("    PL_permit_adverb was %s\n",
                         PL_permit_adverb ? "TRUE" : "FALSE"); } );
-            PL_permit_adverb = FALSE;   /* PL_permit_adverb only lasts one token */
+            /*PL_permit_adverb = FALSE;*/   /* PL_permit_adverb only lasts one token */
 	    goto grabattrs;
 	case XATTRBLOCK:
 	    PL_expect = XBLOCK;
@@ -6210,7 +6211,28 @@ Perl_yylex(pTHX)
 		    PL_lex_state = LEX_INTERPEND;
 	    }
 	}
-	TERM(']');
+
+        DEBUG_T( { printbuf("    At rbrack check, PL_permit_adverb was %s\n",
+                    PL_permit_adverb ? "TRUE" : "FALSE"); } );
+        if(!PL_permit_adverb) {
+            TERM(']');
+        } else {
+            char *inner = s + 1;    /* s points to :, inner to letters, if adverb present */
+            PL_permit_adverb = FALSE;   /* PL_permit_adverb only lasts one token */
+            if(s[0] != ':') {
+                TERM(']');  /* no adverb */
+            } else if(inner[0]=='k' && !isALPHA_A(inner[1])) {
+                pl_yylval.ival = SLICEADVERB_KEYS;
+            } else if(inner[0]=='v' && !isALPHA_A(inner[1])) {
+                pl_yylval.ival = SLICEADVERB_VALUES;
+            } else if(inner[0]=='k' && inner[1]=='v' && !isALPHA_A(inner[2])) {
+                pl_yylval.ival = SLICEADVERB_KV;
+            } else {
+                pl_yylval.ival = SLICEADVERB_NONE;
+            }
+            DEBUG_T( { printbuf("    Found adverb %d\n", pl_yylval.ival); } );
+            TERM(RBRACKADV);
+        }
     case '{':
 	s++;
       leftbracket:
