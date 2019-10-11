@@ -1155,7 +1155,9 @@ term	:	termbinop
 			{ $$ = newUNOP(OP_AV2ARYLEN, 0, ref($1, OP_AV2ARYLEN));}
 	|       subscripted
 			{ $$ = $1; }
-	|	slicestart RBRACKADV                     /* array slice */
+	|	slicestart ']' RBRACKADV	/* array slice.  The ']'
+						 * is lookahead, and the
+						 * RBRACKADV is the adverb. */
 			{ 
 			  struct binop *incoming;
 			  OP *the_sliceme;
@@ -1173,7 +1175,7 @@ term	:	termbinop
 
 			  /* Figure out what type of slice we have based
 			   * on the RBRACK. */
-			  adverb = (slice_adverb)($2);
+			  adverb = (slice_adverb)($3);
 
 			  if(adverb == SLICEADVERB_VALUES) {  /* array slice */
 			      $$ = op_prepend_elem(OP_ASLICE,

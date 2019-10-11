@@ -81,6 +81,7 @@ Individual members of C<PL_parser> have their own documentation.
 #define PL_rsfp_filters		(PL_parser->rsfp_filters)
 #define PL_in_my		(PL_parser->in_my)
 #define PL_permit_adverb	(PL_parser->permit_adverb)
+#define PL_last_was_literal_rbrack	(PL_parser->last_was_literal_rbrack)
 #define PL_in_my_stash		(PL_parser->in_my_stash)
 #define PL_tokenbuf		(PL_parser->tokenbuf)
 #define PL_multi_end		(PL_parser->multi_end)
@@ -209,34 +210,34 @@ static const char* const lex_state_names[] = {
 #   define REPORT(retval) (retval)
 #endif
 
-#define TOKEN(retval) return ( PL_bufptr = s, REPORT(retval))
-#define OPERATOR(retval) return (PL_expect = XTERM, PL_bufptr = s, REPORT(retval))
-#define AOPERATOR(retval) return ao((PL_expect = XTERM, PL_bufptr = s, retval))
-#define PREBLOCK(retval) return (PL_expect = XBLOCK,PL_bufptr = s, REPORT(retval))
-#define PRETERMBLOCK(retval) return (PL_expect = XTERMBLOCK,PL_bufptr = s, REPORT(retval))
-#define PREREF(retval) return (PL_expect = XREF,PL_bufptr = s, REPORT(retval))
-#define TERM(retval) return (CLINE, PL_expect = XOPERATOR, PL_bufptr = s, REPORT(retval))
-#define POSTDEREF(f) return (PL_bufptr = s, S_postderef(aTHX_ REPORT(f),s[1]))
+#define TOKEN(retval) return ( PL_bufptr = s, (PL_last_was_literal_rbrack = 0), REPORT(retval))
+#define OPERATOR(retval) return (PL_expect = XTERM, PL_bufptr = s, (PL_last_was_literal_rbrack = 0), REPORT(retval))
+#define AOPERATOR(retval) return ((PL_last_was_literal_rbrack = 0), ao((PL_expect = XTERM, PL_bufptr = s, retval)))
+#define PREBLOCK(retval) return (PL_expect = XBLOCK,PL_bufptr = s, (PL_last_was_literal_rbrack = 0), REPORT(retval))
+#define PRETERMBLOCK(retval) return (PL_expect = XTERMBLOCK,PL_bufptr = s, (PL_last_was_literal_rbrack = 0), REPORT(retval))
+#define PREREF(retval) return (PL_expect = XREF,PL_bufptr = s, (PL_last_was_literal_rbrack = 0), REPORT(retval))
+#define TERM(retval) return (CLINE, (PL_last_was_literal_rbrack = (retval==']')), PL_expect = XOPERATOR, PL_bufptr = s, REPORT(retval))
+#define POSTDEREF(f) return (PL_bufptr = s, (PL_last_was_literal_rbrack = 0), S_postderef(aTHX_ REPORT(f),s[1]))
 #define LOOPX(f) return (PL_bufptr = force_word(s,BAREWORD,TRUE,FALSE), \
 			 pl_yylval.ival=f, \
 			 PL_expect = PL_nexttoke ? XOPERATOR : XTERM, \
-			 REPORT((int)LOOPEX))
-#define FTST(f)  return (pl_yylval.ival=f, PL_expect=XTERMORDORDOR, PL_bufptr=s, REPORT((int)UNIOP))
-#define FUN0(f)  return (pl_yylval.ival=f, PL_expect=XOPERATOR, PL_bufptr=s, REPORT((int)FUNC0))
-#define FUN0OP(f)  return (pl_yylval.opval=f, CLINE, PL_expect=XOPERATOR, PL_bufptr=s, REPORT((int)FUNC0OP))
-#define FUN1(f)  return (pl_yylval.ival=f, PL_expect=XOPERATOR, PL_bufptr=s, REPORT((int)FUNC1))
-#define BOop(f)  return ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)BITOROP))
-#define BAop(f)  return ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)BITANDOP))
+			 (PL_last_was_literal_rbrack = 0), REPORT((int)LOOPEX))
+#define FTST(f)  return (pl_yylval.ival=f, PL_expect=XTERMORDORDOR, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)UNIOP))
+#define FUN0(f)  return (pl_yylval.ival=f, PL_expect=XOPERATOR, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)FUNC0))
+#define FUN0OP(f)  return (pl_yylval.opval=f, CLINE, PL_expect=XOPERATOR, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)FUNC0OP))
+#define FUN1(f)  return (pl_yylval.ival=f, PL_expect=XOPERATOR, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)FUNC1))
+#define BOop(f)  return ((PL_last_was_literal_rbrack = 0), ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)BITOROP)))
+#define BAop(f)  return ((PL_last_was_literal_rbrack = 0), ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)BITANDOP)))
 #define BCop(f) return pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr = s, \
-		       REPORT('~')
-#define SHop(f)  return ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)SHIFTOP))
-#define PWop(f)  return ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)POWOP))
-#define PMop(f)  return(pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, REPORT((int)MATCHOP))
-#define Aop(f)   return ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)ADDOP))
-#define AopNOASSIGN(f) return (pl_yylval.ival=f, PL_bufptr=s, REPORT((int)ADDOP))
-#define Mop(f)   return ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)MULOP))
-#define Eop(f)   return (pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, REPORT((int)EQOP))
-#define Rop(f)   return (pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, REPORT((int)RELOP))
+		       (PL_last_was_literal_rbrack = 0), REPORT('~')
+#define SHop(f)  return ((PL_last_was_literal_rbrack = 0), ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)SHIFTOP)))
+#define PWop(f)  return ((PL_last_was_literal_rbrack = 0), ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)POWOP)))
+#define PMop(f)  return(pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)MATCHOP))
+#define Aop(f)   return ((PL_last_was_literal_rbrack = 0), ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)ADDOP)))
+#define AopNOASSIGN(f) return (pl_yylval.ival=f, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)ADDOP))
+#define Mop(f)   return ((PL_last_was_literal_rbrack = 0), ao((pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (int)MULOP)))
+#define Eop(f)   return (pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)EQOP))
+#define Rop(f)   return (pl_yylval.ival=f, PL_expect=XTERM, PL_bufptr=s, (PL_last_was_literal_rbrack = 0), REPORT((int)RELOP))
 
 /* This bit of chicanery makes a unary function followed by
  * a parenthesis into a function with one argument, highest precedence.
@@ -2538,7 +2539,8 @@ S_sublex_done(pTHX)
 	return yylex();
     }
 
-    /* XXX article - need to restore PL_permit_adverb? */
+    /* XXX article - need to restore PL_permit_adverb and 
+     * PL_last_was_literal_rbrack? */
 
     /* Is there a right-hand side to take care of? (s//RHS/ or tr//RHS/) */
     assert(PL_lex_inwhat != OP_TRANSR);
@@ -5284,6 +5286,35 @@ Perl_yylex(pTHX)
         TOKEN(sigil);
     }
 
+    /* Check for adverbs on slices */
+    if(PL_permit_adverb && PL_last_was_literal_rbrack) {
+        char *debug_msg;
+        char *inner = s + 1;    /* s points to :, inner to letters, if adverb present */
+        DEBUG_T( { printbuf("    Checking for adverb\n", ""); } );
+        PL_last_was_literal_rbrack = 0;
+        PL_permit_adverb = FALSE;   /* PL_permit_adverb only lasts one token */
+
+        if(s[0] != ':') {
+            goto retry;  /* no adverb */
+        } else if(inner[0]=='k' && !isALPHA_A(inner[1])) {
+            pl_yylval.ival = SLICEADVERB_KEYS;
+            s+=2;
+            debug_msg="keys";
+        } else if(inner[0]=='v' && !isALPHA_A(inner[1])) {
+            pl_yylval.ival = SLICEADVERB_VALUES;
+            s+=2;
+            debug_msg="values";
+        } else if(inner[0]=='k' && inner[1]=='v' && !isALPHA_A(inner[2])) {
+            pl_yylval.ival = SLICEADVERB_KV;
+            s+=3;
+            debug_msg="key/value";
+        } else {
+            goto retry;     /* not a slice we understand */
+        }
+        DEBUG_T( { printbuf("    Found adverb %s\n", debug_msg); } );
+        TERM(RBRACKADV);
+    } /* endif adverb check */
+
   retry:
     switch (*s) {
     default:
@@ -5332,8 +5363,10 @@ Perl_yylex(pTHX)
     }
     case 4:
     case 26:
+        PL_last_was_literal_rbrack = 0;
 	goto fake_eof;			/* emulate EOF on ^D or ^Z */
     case 0:
+        PL_last_was_literal_rbrack = 0;
 	if ((!PL_rsfp || PL_lex_inwhat)
 	 && (!PL_parser->filtered || s+1 < PL_bufend)) {
 	    PL_last_uni = 0;
@@ -5688,16 +5721,19 @@ Perl_yylex(pTHX)
 	}
 	goto retry;
     case '\r':
+        PL_last_was_literal_rbrack = 0;
 #ifdef PERL_STRICT_CR
 	Perl_warn(aTHX_ "Illegal character \\%03o (carriage return)", '\r');
 	Perl_croak(aTHX_
       "\t(Maybe you didn't strip carriage returns after a network transfer?)\n");
 #endif
     case ' ': case '\t': case '\f': case '\v':
+        PL_last_was_literal_rbrack = 0;
 	s++;
 	goto retry;
     case '#':
     case '\n':
+        PL_last_was_literal_rbrack = 0;
 	if (PL_lex_state != LEX_NORMAL
             || (PL_in_eval && !PL_rsfp && !PL_parser->filtered))
         {
@@ -6214,25 +6250,7 @@ Perl_yylex(pTHX)
 
         DEBUG_T( { printbuf("    At rbrack check, PL_permit_adverb was %s\n",
                     PL_permit_adverb ? "TRUE" : "FALSE"); } );
-        if(!PL_permit_adverb) {
-            TERM(']');
-        } else {
-            char *inner = s + 1;    /* s points to :, inner to letters, if adverb present */
-            PL_permit_adverb = FALSE;   /* PL_permit_adverb only lasts one token */
-            if(s[0] != ':') {
-                TERM(']');  /* no adverb */
-            } else if(inner[0]=='k' && !isALPHA_A(inner[1])) {
-                pl_yylval.ival = SLICEADVERB_KEYS;
-            } else if(inner[0]=='v' && !isALPHA_A(inner[1])) {
-                pl_yylval.ival = SLICEADVERB_VALUES;
-            } else if(inner[0]=='k' && inner[1]=='v' && !isALPHA_A(inner[2])) {
-                pl_yylval.ival = SLICEADVERB_KV;
-            } else {
-                pl_yylval.ival = SLICEADVERB_NONE;
-            }
-            DEBUG_T( { printbuf("    Found adverb %d\n", pl_yylval.ival); } );
-            TERM(RBRACKADV);
-        }
+        TERM(']');  /* We will check for adverbs on the next call */
     case '{':
 	s++;
       leftbracket:

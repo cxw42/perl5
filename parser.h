@@ -95,6 +95,7 @@ typedef struct yy_parser {
     line_t	copline;
     U16		in_my;		/* we're compiling a "my"/"our" declaration */
     U8		permit_adverb;	/* we can accept an adverb here */
+    U8          last_was_literal_rbrack;    /* the last token was ']' */
     U8		lex_state;	/* next token is determined */
     U8		error_count;	/* how many compile errors so far, max 10 */
     U8		sub_error_count; /* the number of errors before sublexing */
